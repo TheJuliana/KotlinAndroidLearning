@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">BFU</string>
+
+    <string name="registration">Регистрация</string>
+    <string name="login">Вход</string>
+
+    <string name="not_registered">Еще не зарегистрированы?</string>
+    <string name="enter_email">Введите email</string>
+    <string name="enter_phone">Введите номер телефона</string>
+    <string name="enter_email_phone">Введите email/телефон</string>
+    <string name="enter_password">Введите пароль</string>
+    <string name="reenter_password">Повторите пароль</string>
+    <string name="remember_me">Запомнить меня</string>
+    <string name="by_email">По email</string>
+    <string name="by_phone">По номеру</string>
+
+    <string name="login_btn">Войти</string>
+    <string name="register_btn">Создать аккаунт</string>
+
+    <string name="welcome_new">Добро пожаловать!</string>
+    <string name="welcome_back">С возвращением!</string>
+
+<!--                ValidationService                                     -->
+
+    <string name="error_enter_email">Введите email</string>
+    <string name="error_invalid_email">Неправильный email</string>
+
+    <string name="error_enter_phone">Введите номер телефона</string>
+    <string name="error_phone_format">Номер должен начинаться с +</string>
+
+    <string name="error_empty_password">Пароль не может быть пустым</string>
+    <string name="error_short_password">Пароль минимум 8 символов</string>
+    <string name="error_password_mismatch">Пароли не совпадают</string>
+</resources>
