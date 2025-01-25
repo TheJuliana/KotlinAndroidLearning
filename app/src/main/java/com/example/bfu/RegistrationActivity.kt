@@ -58,10 +58,9 @@ class RegistrationActivity : AppCompatActivity() {
 
         button.setOnClickListener {
             val (isValid, input, password) = validateFields()
-            val emailOrPhone = if (byPhone) "Phone" else "Email"
 
             if (isValid) {
-                registrationService.saveRegistration(emailOrPhone, input, password)
+                registrationService.saveRegistration(input, password)
                 startActivity(Intent(this, ContentActivity::class.java))
                 finish()
             }
