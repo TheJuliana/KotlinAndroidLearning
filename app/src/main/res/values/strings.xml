@@ -20,7 +20,7 @@
     <string name="welcome_new">Добро пожаловать!</string>
     <string name="welcome_back">С возвращением!</string>
 
-<!--                ValidationService                                     -->
+    <!--                ValidationService                                     -->
 
     <string name="error_enter_email">Введите email</string>
     <string name="error_invalid_email">Неправильный email</string>
@@ -31,4 +31,7 @@
     <string name="error_empty_password">Пароль не может быть пустым</string>
     <string name="error_short_password">Пароль минимум 8 символов</string>
     <string name="error_password_mismatch">Пароли не совпадают</string>
+
+    <string name="first_fragment">fragment 1</string>
+    <string name="second_fragment">fragment 2</string>
 </resources>

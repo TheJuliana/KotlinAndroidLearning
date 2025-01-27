@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.bfu.services.RegistrationService
 
-class MainActivity : AppCompatActivity() {
+class SplashActivity : AppCompatActivity() {
 
     private lateinit var progressBar: ProgressBar
     private lateinit var registrationService: RegistrationService
@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_splash)
         progressBar = findViewById(R.id.progressBar)
         sharedPreferences = getSharedPreferences("userPreferences", MODE_PRIVATE)
         registrationService = RegistrationService(this)
