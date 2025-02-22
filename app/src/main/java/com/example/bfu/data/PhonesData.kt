@@ -3,7 +3,7 @@ package com.example.bfu.data
 import com.example.bfu.models.PhoneModel
 
 class PhonesData {
-    public val phones = arrayOf(
+    val phones = arrayOf(
         PhoneModel(
             "1. Huawei Mate 50 Pro",
             "$1299",

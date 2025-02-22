@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/first_fragment">
+    app:startDestination="@id/splashFragment">
 
     <fragment
         android:id="@+id/first_fragment"
@@ -14,5 +14,36 @@
         android:name="com.example.bfu.fragments.SecondFragment"
         android:label="TWO FRAGMENT"
         />
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.bfu.fragments.SplashFragment"
+        android:label="SplashFragment" >
+        <action
+            android:id="@+id/action_splash_to_login"
+            app:destination="@id/fragment_login" />
+        <action
+            android:id="@+id/action_splash_to_register"
+            app:destination="@id/fragment_register" />
+        <action
+            android:id="@+id/action_splash_to_first"
+            app:destination="@id/first_fragment" />
+    </fragment>
 
+    <fragment
+        android:id="@+id/fragment_login"
+        android:name="com.example.bfu.fragments.LoginFragment"
+        android:label="LoginFragment" >
+        <action
+            android:id="@+id/action_login_to_first"
+            app:destination="@id/first_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_register"
+        android:name="com.example.bfu.fragments.RegisterFragment"
+        android:label="RegisterFragment" >
+        <action
+            android:id="@+id/action_register_to_first"
+            app:destination="@id/first_fragment" />
+    </fragment>
 </navigation>

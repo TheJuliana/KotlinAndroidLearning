@@ -20,7 +20,7 @@ class SplashActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_splash)
+        setContentView(R.layout.fragment_splash)
         progressBar = findViewById(R.id.progressBar)
         sharedPreferences = getSharedPreferences("userPreferences", MODE_PRIVATE)
         registrationService = RegistrationService(this)
