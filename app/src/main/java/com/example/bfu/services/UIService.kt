@@ -2,6 +2,7 @@ package com.example.bfu.services
 
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.bfu.R
 
@@ -12,6 +13,10 @@ class UIService(private val context: android.content.Context) {
         } else {
             context.getString(if (isPhone) R.string.enter_phone else R.string.enter_email)
         }
+    }
+
+    fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
     fun updateTextAppearance(view: TextView, isActive: Boolean) {

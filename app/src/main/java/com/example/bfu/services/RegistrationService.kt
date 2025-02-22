@@ -7,10 +7,8 @@ class RegistrationService(context: Context) {
     private val sharedPreferences =
         context.getSharedPreferences("userPreferences", Context.MODE_PRIVATE)
 
-    fun saveRegistration(input: String, password: String) {
+    fun saveRegistration() {
         sharedPreferences.edit()
-            .putString("emailOrPhone", input)
-            .putString("Password", password)
             .putBoolean("isRegistered", true)
             .apply()
     }
@@ -19,14 +17,6 @@ class RegistrationService(context: Context) {
         sharedPreferences.edit()
             .putBoolean("isLogged", true)
             .apply()
-    }
-
-    fun checkIfUserRegistered(input: String, password: String): Boolean {
-
-        val savedEmailOrPhone = sharedPreferences.getString("emailOrPhone", null)
-        val savedPassword = sharedPreferences.getString("Password", null)
-
-        return (savedEmailOrPhone == input && savedPassword == password)
     }
 
     fun checkRegistration(): Boolean {

@@ -15,20 +15,13 @@ import com.example.bfu.services.RegistrationService
 class SplashFragment : Fragment() {
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val root =  inflater.inflate(R.layout.fragment_splash, container, false)
         val navController = NavHostFragment.findNavController(this)
 
-        val progressBar = root.findViewById<View>(R.id.progressBar)
-        val sharedPreferences = requireContext().getSharedPreferences("userPreferences", Context.MODE_PRIVATE)
         val registrationService = RegistrationService(requireContext())
 
         //registrationService.logOut()

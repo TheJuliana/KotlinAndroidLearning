@@ -7,5 +7,4 @@ class PhoneModel(
     var price: String,
     var date: String,
     var score: String
-) {
-}
+)
