@@ -1,6 +1,5 @@
 package com.example.bfu.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,11 +11,9 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment
-import com.example.bfu.ContentActivity
 import com.example.bfu.R
-import com.example.bfu.services.RegistrationService
+import com.example.bfu.services.SharedPreferencesService
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -29,7 +26,7 @@ class LoginFragment : Fragment() {
     private var rememberMe = false
     private lateinit var email: String
     private lateinit var password: String
-    private lateinit var registrationService: RegistrationService
+    private lateinit var sharedPreferencesService: SharedPreferencesService
 
     private lateinit var auth: FirebaseAuth
 
@@ -38,7 +35,7 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_login, container, false)
-        registrationService = RegistrationService(requireContext())
+        sharedPreferencesService = SharedPreferencesService(requireContext())
 
         emailOrPhoneField = root.findViewById(R.id.editTextEmailOrPhone)
         passwordField = root.findViewById(R.id.editTextPassword)
@@ -48,7 +45,7 @@ class LoginFragment : Fragment() {
 
         auth = Firebase.auth
 
-            setUpListeners()
+        this.setUpListeners()
             return root
         }
 
@@ -73,7 +70,7 @@ class LoginFragment : Fragment() {
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             if (rememberMe) {
-                                registrationService.saveLoggedIn()
+                                sharedPreferencesService.saveLoggedIn()
                             }
                             navController.navigate(R.id.first_fragment)
                         } else {

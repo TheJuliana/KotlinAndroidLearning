@@ -11,15 +11,15 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.navigation.fragment.NavHostFragment
 import com.example.bfu.R
-import com.example.bfu.services.RegistrationService
+import com.example.bfu.services.FirebaseAuthService
+import com.example.bfu.services.SharedPreferencesService
+import com.example.bfu.services.TimerService
 import com.example.bfu.services.UIService
 import com.example.bfu.services.ValidationService
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import java.util.concurrent.TimeUnit
 
 private const val s = "Введите код подтверждения"
 
@@ -36,22 +36,21 @@ class RegisterFragment : Fragment() {
     private lateinit var buttonSendCode: Button
     private lateinit var buttonAlreadyRegistered: TextView
     private lateinit var button: Button
+    private lateinit var auth: FirebaseAuth
 
     private lateinit var uiService: UIService
     private lateinit var validationService: ValidationService
-    private lateinit var registrationService: RegistrationService
+    private lateinit var sharedPreferencesService: SharedPreferencesService
+    private lateinit var timerService: TimerService
+    private lateinit var firebaseAuthService: FirebaseAuthService
 
-    private lateinit var auth: FirebaseAuth
+    private val resendDelayMillis = 60000L // 60 секунд
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_register, container, false)
-
-        uiService = UIService(requireContext())
-        validationService = ValidationService()
-        registrationService = RegistrationService(requireContext())
 
         textByPhone = root.findViewById(R.id.textViewByPhone)
         textByEmail = root.findViewById(R.id.textViewByEmail)
@@ -62,8 +61,13 @@ class RegisterFragment : Fragment() {
         buttonSendCode = root.findViewById(R.id.buttonSendCode)
         buttonAlreadyRegistered = root.findViewById(R.id.button_already_registered)
         button = root.findViewById(R.id.button)
-
         auth = FirebaseAuth.getInstance()
+
+        uiService = UIService(requireContext())
+        validationService = ValidationService()
+        sharedPreferencesService = SharedPreferencesService(requireContext())
+        timerService = TimerService(buttonSendCode,resendDelayMillis)
+        firebaseAuthService = FirebaseAuthService(auth)
 
         switchInputMode(byPhone)
 
@@ -98,14 +102,14 @@ class RegisterFragment : Fragment() {
                 // регистрация по номеру телефона
                 val code = editTextCode.text.toString().trim()
                 if (code.isNotEmpty()) {
-                    verifyCode(code)  // Проверяем код
+                    verifyCode(code)
                 } else {
                     uiService.showToast("Введите код подтверждения")
                 }
             } else {
-                // Регистрация по email
+                // регистрация по email
                 val password = password1Field.text.toString().trim()
-                val (isValid, _, _) = validateFields()
+                val (isValid, _, _) = validationService.validateFields(emailOrPhoneField, password1Field, password2Field, requireContext(), byPhone)
                 if (isValid) {
                     registerByEmail(input, password)
                 }
@@ -115,20 +119,11 @@ class RegisterFragment : Fragment() {
         buttonSendCode.setOnClickListener {
             val phoneNumber = emailOrPhoneField.text.toString().trim()
             if (phoneNumber.isNotEmpty()) {
-                sendVerificationCode(phoneNumber)  // Отправляем код
+                firebaseAuthService.sendVerificationCode(phoneNumber, requireActivity(), auth, resendDelayMillis, callbacks, timerService)  // Отправляем код
             } else {
                 uiService.showToast("Введите номер телефона")
             }
         }
-    }
-    private fun sendVerificationCode(phoneNumber: String) {
-        val options = PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber(phoneNumber)
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity(requireActivity())
-            .setCallbacks(callbacks)
-            .build()
-        PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
     private val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -143,23 +138,25 @@ class RegisterFragment : Fragment() {
         override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
             this@RegisterFragment.verificationId = verificationId
             uiService.showToast("Код отправлен")
-            // Показываем поле для ввода кода и кнопку подтверждения
+            // показываем поле для ввода кода и кнопку подтверждения
             editTextCode.visibility = View.VISIBLE
-            buttonSendCode.visibility = View.GONE
+            buttonSendCode.isEnabled = false
             button.text = "Подтвердить код"
         }
     }
 
     private fun verifyCode(code: String) {
-        val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
-        signInWithPhoneAuthCredential(credential)
+        val credential = firebaseAuthService.verifyCode(code, verificationId)
+        if (credential != null) {
+            signInWithPhoneAuthCredential(credential)
+        }
     }
 
     private fun registerByEmail(email: String, password: String) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    registrationService.saveRegistration()
+                    sharedPreferencesService.saveRegistration()
                     NavHostFragment.findNavController(this).navigate(R.id.first_fragment)
                 } else {
                     uiService.showToast("Ошибка регистрации: ${task.exception?.message}")
@@ -167,59 +164,30 @@ class RegisterFragment : Fragment() {
             }
     }
 
-
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Вход успешен
+                    // вход успешен
                     NavHostFragment.findNavController(this).navigate(R.id.first_fragment)
                 } else {
-                    // Обработка ошибки
                     uiService.showToast("Ошибка входа: ${task.exception?.message}")
                 }
             }
     }
 
-    private fun validateFields() : Triple<Boolean, String, String>  {
-        val input = emailOrPhoneField.text.toString().trim()
-        val password1 = password1Field.text.toString().trim()
-        val password2 = password2Field.text.toString().trim()
-
-        try {
-            if (byPhone) {
-                validationService.validatePhone(input, requireContext())
-            } else {
-                validationService.validateEmail(input, requireContext())
-            }
-            validationService.validatePasswords(password1, password2, requireContext())
-
-            return Triple(true, input, password1)
-        } catch (e: IllegalArgumentException) {
-            when (e.message) {
-                getString(R.string.error_enter_email), getString(R.string.error_invalid_email) -> emailOrPhoneField.error = e.message
-                getString(R.string.error_enter_phone), getString(R.string.error_phone_format) -> emailOrPhoneField.error = e.message
-                getString(R.string.error_empty_password), getString(R.string.error_short_password) -> password1Field.error = e.message
-                getString(R.string.error_password_mismatch) -> password2Field.error = e.message
-            }
-
-            return Triple(false, input, password1)
-        }
-    }
-
-
     private fun switchInputMode(isPhone: Boolean) {
         byPhone = isPhone
 
         if (isPhone) {
-            // Режим регистрации по номеру телефона
+            // режим регистрации по номеру телефона
             password1Field.visibility = View.GONE
             password2Field.visibility = View.GONE
             editTextCode.visibility = View.VISIBLE
             buttonSendCode.visibility = View.VISIBLE
             button.text = "Подтвердить код"
         } else {
-            // Режим регистрации по email
+            // по email
             password1Field.visibility = View.VISIBLE
             password2Field.visibility = View.VISIBLE
             editTextCode.visibility = View.GONE
@@ -240,5 +208,11 @@ class RegisterFragment : Fragment() {
             InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        timerService.cancel()
+    }
+
 
 }

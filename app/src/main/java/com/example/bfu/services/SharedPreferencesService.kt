@@ -1,8 +1,13 @@
 package com.example.bfu.services
 
+import android.app.Activity
 import android.content.Context
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.PhoneAuthOptions
+import com.google.firebase.auth.PhoneAuthProvider
+import java.util.concurrent.TimeUnit
 
-class RegistrationService(context: Context) {
+class SharedPreferencesService(context: Context) {
 
     private val sharedPreferences =
         context.getSharedPreferences("userPreferences", Context.MODE_PRIVATE)
@@ -31,5 +36,7 @@ class RegistrationService(context: Context) {
     fun logOut() {
         sharedPreferences.edit().clear().apply()
     }
+
+
 
 }

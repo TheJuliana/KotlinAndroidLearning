@@ -28,27 +28,18 @@ class ContentActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-
-
-
         bottomNav.setupWithNavController(navController)
 
-        // Слушатель изменений в NavController
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.fragment_login, R.id.fragment_register -> {
-                    // Скрываем BottomNavigationBar на экранах логина и регистрации
+                    // скрываем BottomNavigationBar на экранах логина и регистрации
                     bottomNav.visibility = View.GONE
                 }
                 else -> {
-                    // Показываем BottomNavigationBar на других экранах
                     bottomNav.visibility = View.VISIBLE
                 }
             }
         }
-    }
-
-    fun setBottomNavigationVisibility(visibility: Int) {
-        bottomNav.visibility = visibility
     }
 }

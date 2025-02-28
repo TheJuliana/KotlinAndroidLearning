@@ -1,6 +1,5 @@
 package com.example.bfu.fragments
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,11 +8,9 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.NavHostFragment
 import com.example.bfu.R
-import com.example.bfu.services.RegistrationService
-
+import com.example.bfu.services.SharedPreferencesService
 
 class SplashFragment : Fragment() {
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -22,14 +19,14 @@ class SplashFragment : Fragment() {
         val root =  inflater.inflate(R.layout.fragment_splash, container, false)
         val navController = NavHostFragment.findNavController(this)
 
-        val registrationService = RegistrationService(requireContext())
+        val sharedPreferencesService = SharedPreferencesService(requireContext())
 
         //registrationService.logOut()
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-        val isRegistered = registrationService.checkRegistration() //проверяем есть ли кто-то зарегистрированный
-        val isLogged = registrationService.checkIfLogged() //вошёл?
+        val isRegistered = sharedPreferencesService.checkRegistration() //проверяем есть ли кто-то зарегистрированный
+        val isLogged = sharedPreferencesService.checkIfLogged() //вошёл?
 
         when {
             !isRegistered -> {
@@ -42,7 +39,6 @@ class SplashFragment : Fragment() {
                 navController.navigate(R.id.first_fragment)
             }
         }
-
         return root
     }
 
